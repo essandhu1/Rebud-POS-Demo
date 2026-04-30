@@ -53,3 +53,10 @@ The integration layer that connects the customer app to the mock POS logic.
 - Node.js
 - Supabase/Postgres
 - Tailwind CSS
+
+## Package Manager
+
+This monorepo uses `pnpm` workspaces.
+
+- Workspace config: `pnpm-workspace.yaml`
+- Root package config: `package.json`
