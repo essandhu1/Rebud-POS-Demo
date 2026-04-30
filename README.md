@@ -1,6 +1,6 @@
 # Rebud-POS-Demo
 Something flashy to justify my worth to the company.
-# ReBUD Customer App POC
+# Rebud Customer App POC
 
 This project is a proof of concept for a native iOS customer app that communicates with a mock cannabis POS system through a backend API.
 
