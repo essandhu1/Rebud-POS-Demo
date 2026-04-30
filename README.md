@@ -60,3 +60,13 @@ This monorepo uses `pnpm` workspaces.
 
 - Workspace config: `pnpm-workspace.yaml`
 - Root package config: `package.json`
+
+## Local Database (POC)
+
+- Start local Postgres (if Docker is installed): `docker compose up -d`
+- Apply schema: `pnpm db:schema`
+- Seed demo products: `pnpm seed:products`
+
+Fallback scripts:
+- `pnpm db:schema:psql` if you prefer local `psql`
+- `pnpm db:schema:docker` if Docker + `psql` are available in the container

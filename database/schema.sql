@@ -40,8 +40,12 @@ CREATE TABLE products (
   store_id BIGINT NOT NULL REFERENCES stores(id) ON DELETE CASCADE,
   sku TEXT NOT NULL,
   name TEXT NOT NULL,
+  brand TEXT,
   category TEXT,
   description TEXT,
+  image_url TEXT,
+  potency_display TEXT,
+  potency_json JSONB NOT NULL DEFAULT '{}'::JSONB,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -63,7 +67,8 @@ CREATE TABLE inventory (
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'quarantined', 'sold_out', 'archived')),
   expires_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (store_id, product_id)
 );
 
 CREATE TABLE inventory_movements (

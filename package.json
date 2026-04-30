@@ -6,6 +6,10 @@
   "scripts": {
     "dev:mobile": "pnpm --filter mobile-app start",
     "dev:dashboard": "pnpm --filter pos-dashboard dev",
-    "dev:api": "pnpm --filter api-server dev"
+    "dev:api": "pnpm --filter api-server dev",
+    "db:schema": "pnpm --filter api-server db:schema",
+    "db:schema:psql": "psql \"$DATABASE_URL\" -f database/schema.sql",
+    "db:schema:docker": "docker compose exec -T postgres psql \"postgresql://postgres:postgres@localhost:5432/rebud_pos_demo\" -f database/schema.sql",
+    "seed:products": "pnpm --filter api-server seed:products"
   }
 }

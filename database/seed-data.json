@@ -1,0 +1,230 @@
+[
+  {
+    "productName": "Canabotanica - Flower - Blue Dream 3.5g",
+    "brand": "Canabotanica",
+    "category": "Flower",
+    "sku": "CANA-FLR-BD-035",
+    "price": 40.00,
+    "potency": {
+      "thcPercent": 27.8,
+      "cbdPercent": 0.2,
+      "thcMg": null,
+      "cbdMg": null,
+      "display": "27.8% THC / 0.2% CBD"
+    },
+    "description": "Indoor eighth with a classic Blue Dream profile: bright berry aroma, smooth smoke, and a balanced hybrid feel for the demo menu.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Blue+Dream+Flower",
+    "inventoryQuantity": 18,
+    "isActive": true,
+    "source": "csv-derived"
+  },
+  {
+    "productName": "Canabotanica - Flower Sungrown - Trop Cherry 3.5g",
+    "brand": "Canabotanica",
+    "category": "Flower",
+    "sku": "CANA-FLR-TC-035",
+    "price": 20.00,
+    "potency": {
+      "thcPercent": 24.6,
+      "cbdPercent": 0.1,
+      "thcMg": null,
+      "cbdMg": null,
+      "display": "24.6% THC / 0.1% CBD"
+    },
+    "description": "Sungrown eighth with a tart cherry nose, light citrus notes, and a value-tier price point for flower browsing.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Trop+Cherry+Flower",
+    "inventoryQuantity": 24,
+    "isActive": true,
+    "source": "csv-derived"
+  },
+  {
+    "productName": "Canabotanica - Pre-Roll - Gorilla Glue 1g",
+    "brand": "Canabotanica",
+    "category": "Pre-rolls",
+    "sku": "CANA-PR-GG-001",
+    "price": 7.00,
+    "potency": {
+      "thcPercent": 25.9,
+      "cbdPercent": 0.1,
+      "thcMg": null,
+      "cbdMg": null,
+      "display": "25.9% THC / 0.1% CBD"
+    },
+    "description": "Single 1g pre-roll with earthy, pine-forward Gorilla Glue flavor and a quick-grab checkout-friendly format.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Gorilla+Glue+Pre-Roll",
+    "inventoryQuantity": 72,
+    "isActive": true,
+    "source": "csv-derived"
+  },
+  {
+    "productName": "Canabotanica - Diamond Dusted Infused Hash Hole - Blue Dream 1g",
+    "brand": "Canabotanica",
+    "category": "Pre-rolls",
+    "sku": "CANA-PR-BD-HH-001",
+    "price": 12.00,
+    "potency": {
+      "thcPercent": 38.4,
+      "cbdPercent": 0.2,
+      "thcMg": null,
+      "cbdMg": null,
+      "display": "38.4% THC / 0.2% CBD"
+    },
+    "description": "Infused 1g hash-hole style pre-roll with Blue Dream flower and diamond dust for a premium pre-roll demo item.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Blue+Dream+Hash+Hole",
+    "inventoryQuantity": 64,
+    "isActive": true,
+    "source": "csv-derived"
+  },
+  {
+    "productName": "Canabotanica - AIO - Tropicana Cookies 1g",
+    "brand": "Canabotanica",
+    "category": "Vapes",
+    "sku": "CANA-VAPE-TC-001",
+    "price": 19.75,
+    "potency": {
+      "thcPercent": 84.7,
+      "cbdPercent": 0.3,
+      "thcMg": null,
+      "cbdMg": null,
+      "display": "84.7% THC / 0.3% CBD"
+    },
+    "description": "Disposable all-in-one vape with a citrus-cookie profile and simple grab-and-go positioning for the menu.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Tropicana+Cookies+Vape",
+    "inventoryQuantity": 36,
+    "isActive": true,
+    "source": "csv-derived"
+  },
+  {
+    "productName": "Canabotanica - AIO - Gorilla Glue 1g",
+    "brand": "Canabotanica",
+    "category": "Vapes",
+    "sku": "CANA-VAPE-GG-001",
+    "price": 19.75,
+    "potency": {
+      "thcPercent": 82.1,
+      "cbdPercent": 0.2,
+      "thcMg": null,
+      "cbdMg": null,
+      "display": "82.1% THC / 0.2% CBD"
+    },
+    "description": "All-in-one 1g vape with earthy Gorilla Glue notes and a compact disposable format for vape category testing.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Gorilla+Glue+Vape",
+    "inventoryQuantity": 34,
+    "isActive": true,
+    "source": "csv-derived"
+  },
+  {
+    "productName": "Canabotanica - Solventless Live Rosin - Shake Shack 1g",
+    "brand": "Canabotanica",
+    "category": "Concentrates",
+    "sku": "CANA-CONC-SS-001",
+    "price": 45.00,
+    "potency": {
+      "thcPercent": 73.5,
+      "cbdPercent": 0.4,
+      "thcMg": null,
+      "cbdMg": null,
+      "display": "73.5% THC / 0.4% CBD"
+    },
+    "description": "Solventless live rosin concentrate with a rich terpene profile, positioned as a premium concentrate item.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Shake+Shack+Rosin",
+    "inventoryQuantity": 14,
+    "isActive": true,
+    "source": "csv-derived"
+  },
+  {
+    "productName": "Canabotanica - Solventless Live Rosin - Slurty3 1g",
+    "brand": "Canabotanica",
+    "category": "Concentrates",
+    "sku": "CANA-CONC-SL3-001",
+    "price": 45.00,
+    "potency": {
+      "thcPercent": 71.9,
+      "cbdPercent": 0.3,
+      "thcMg": null,
+      "cbdMg": null,
+      "display": "71.9% THC / 0.3% CBD"
+    },
+    "description": "Premium 1g solventless live rosin with sweet gas notes and a high-end concentrate price point.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Slurty3+Rosin",
+    "inventoryQuantity": 12,
+    "isActive": true,
+    "source": "csv-derived"
+  },
+  {
+    "productName": "Canabotanica - Gummies - Blue Dream Berry 100mg",
+    "brand": "Canabotanica",
+    "category": "Edibles",
+    "sku": "CANA-EDB-BDB-100",
+    "price": 16.00,
+    "potency": {
+      "thcPercent": null,
+      "cbdPercent": null,
+      "thcMg": 100,
+      "cbdMg": 0,
+      "display": "100mg THC"
+    },
+    "description": "Demo-only gummy pack with berry flavoring and ten 10mg pieces for edible menu and cart testing.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Blue+Dream+Gummies",
+    "inventoryQuantity": 48,
+    "isActive": true,
+    "source": "demo-generated"
+  },
+  {
+    "productName": "Canabotanica - Gummies - Citrus Balance 1:1 100mg",
+    "brand": "Canabotanica",
+    "category": "Edibles",
+    "sku": "CANA-EDB-CB-100",
+    "price": 18.00,
+    "potency": {
+      "thcPercent": null,
+      "cbdPercent": null,
+      "thcMg": 100,
+      "cbdMg": 100,
+      "display": "100mg THC / 100mg CBD"
+    },
+    "description": "Demo-only 1:1 citrus gummy pack for showing balanced edible products in the customer app.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Citrus+Gummies",
+    "inventoryQuantity": 42,
+    "isActive": true,
+    "source": "demo-generated"
+  },
+  {
+    "productName": "Canabotanica - Beverage - Sparkling Lemonade 100mg",
+    "brand": "Canabotanica",
+    "category": "Beverages",
+    "sku": "CANA-BEV-LEM-100",
+    "price": 14.00,
+    "potency": {
+      "thcPercent": null,
+      "cbdPercent": null,
+      "thcMg": 100,
+      "cbdMg": 0,
+      "display": "100mg THC"
+    },
+    "description": "Demo-only infused sparkling lemonade for beverage category coverage and product card testing.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Sparkling+Lemonade",
+    "inventoryQuantity": 30,
+    "isActive": true,
+    "source": "demo-generated"
+  },
+  {
+    "productName": "Canabotanica - Beverage - Strawberry Hibiscus 100mg",
+    "brand": "Canabotanica",
+    "category": "Beverages",
+    "sku": "CANA-BEV-SH-100",
+    "price": 14.00,
+    "potency": {
+      "thcPercent": null,
+      "cbdPercent": null,
+      "thcMg": 100,
+      "cbdMg": 0,
+      "display": "100mg THC"
+    },
+    "description": "Demo-only infused strawberry hibiscus beverage for showing drinkable cannabis products in the menu.",
+    "imageUrl": "https://placehold.co/600x600?text=Canabotanica+Strawberry+Hibiscus",
+    "inventoryQuantity": 28,
+    "isActive": true,
+    "source": "demo-generated"
+  }
+]
