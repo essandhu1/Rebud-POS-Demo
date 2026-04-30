@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.33.2",
   "scripts": {
     "dev:mobile": "pnpm --filter mobile-app start",
-    "dev:dashboard": "echo \"POS dashboard setup pending\"",
+    "dev:dashboard": "pnpm --filter pos-dashboard dev",
     "dev:api": "echo \"API server setup pending\""
   }
 }
