@@ -1,4 +1,4 @@
-# ReBUD Customer App POC Scope
+# Rebud Customer App POC Scope
 
 ## Goal
 
