@@ -2,9 +2,9 @@
   "name": "rebud-customer-app-poc",
   "private": true,
   "version": "0.1.0",
-  "packageManager": "pnpm@10",
+  "packageManager": "pnpm@10.33.2",
   "scripts": {
-    "dev:mobile": "echo \"Mobile app setup pending\"",
+    "dev:mobile": "pnpm --filter mobile-app start",
     "dev:dashboard": "echo \"POS dashboard setup pending\"",
     "dev:api": "echo \"API server setup pending\""
   }
