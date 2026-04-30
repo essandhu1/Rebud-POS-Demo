@@ -6,6 +6,6 @@
   "scripts": {
     "dev:mobile": "pnpm --filter mobile-app start",
     "dev:dashboard": "pnpm --filter pos-dashboard dev",
-    "dev:api": "echo \"API server setup pending\""
+    "dev:api": "pnpm --filter api-server dev"
   }
 }
