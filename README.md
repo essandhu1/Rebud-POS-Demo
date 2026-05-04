@@ -70,3 +70,35 @@ This monorepo uses `pnpm` workspaces.
 Fallback scripts:
 - `pnpm db:schema:psql` if you prefer local `psql`
 - `pnpm db:schema:docker` if Docker + `psql` are available in the container
+
+### API Server (`apps/api-server`)
+
+Prerequisites: Postgres running, schema applied, optional seed (`pnpm seed:products`), and `DATABASE_URL` set (see `apps/api-server/.env.example`).
+
+Run the API locally:
+
+```bash
+pnpm dev:api
+```
+
+Health check:
+
+```bash
+curl -s http://localhost:4000/health
+```
+
+Products (demo store seeded as `REBUD-DEMO-1`):
+
+```bash
+curl -s http://localhost:4000/products | jq .
+curl -s http://localhost:4000/products/1 | jq .
+```
+
+Inventory:
+
+```bash
+curl -s http://localhost:4000/inventory | jq .
+curl -s http://localhost:4000/inventory/1 | jq .
+```
+
+Errors use `{ "success": false, "error": { "code": "...", "message": "..." } }` (for example `PRODUCT_NOT_FOUND`, `INVENTORY_NOT_FOUND`, `INVALID_PRODUCT_ID`, `DATABASE_ERROR`).
