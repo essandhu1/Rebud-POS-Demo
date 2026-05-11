@@ -3,7 +3,7 @@ export type RootStackParamList = {
   ProductDetail: { productId: string };
   Cart: undefined;
   Checkout: undefined;
-  OrderStatus: undefined;
+  OrderStatus: { orderId: string } | undefined;
   RewardsProfile: undefined;
 };
 
