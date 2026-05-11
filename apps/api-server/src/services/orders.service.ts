@@ -161,6 +161,10 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderResult>
     [order.id, input.channel]
   );
 
+  // 8. Log compliance events
+  await logComplianceEvent(pool, storeId, order.id, null, "order_created", `Order #${order.id} created via ${input.channel}`);
+  await logComplianceEvent(pool, storeId, order.id, null, "inventory_reserved", `${resolvedItems.length} item(s) reserved for order #${order.id}`);
+
   return {
     orderId: String(order.id),
     orderNumber: order.order_number,
@@ -230,12 +234,15 @@ export async function cancelOrder(orderId: string | number): Promise<void> {
     );
   }
 
-  // 4. Log status event
+  // ── Log status event ──
   await pool.query(
     `INSERT INTO order_status_events (order_id, previous_status, new_status, source, note)
      VALUES ($1, $2, 'cancelled', 'api_server', 'Inventory reservations released')`,
     [oid, order.status]
   );
+
+  // Log compliance event
+  await logComplianceEvent(pool, order.store_id, oid, null, "order_cancelled", `Order #${oid} cancelled, ${reservations.rows.length} reservation(s) released`);
 }
 
 /** List orders for the demo store. */
@@ -402,13 +409,13 @@ export async function updateOrderStatus(
   const oid = typeof orderId === "string" ? Number(orderId) : orderId;
 
   const orderResult = await pool.query(
-    `SELECT id, status FROM orders WHERE id = $1 LIMIT 1`,
+    `SELECT id, store_id, customer_id, status, total_cents FROM orders WHERE id = $1 LIMIT 1`,
     [oid]
   );
   if (orderResult.rowCount === 0) {
     throw new ApiError(404, "ORDER_NOT_FOUND", `Order ${oid} not found`);
   }
-  const order = orderResult.rows[0] as { id: number; status: string };
+  const order = orderResult.rows[0] as { id: number; store_id: number; customer_id: number; status: string; total_cents: number };
 
   if (order.status === newStatus) {
     return; // no-op
@@ -431,8 +438,18 @@ export async function updateOrderStatus(
     );
   }
 
+  // ── On "completed": fulfil reservations, deduct inventory ──
+  if (newStatus === "completed") {
+    await completeOrderFulfillment(pool, oid, order.store_id);
+  }
+
+  // Update the order status
+  const extraFields = newStatus === "completed"
+    ? "status = $1, completed_at = NOW(), updated_at = NOW()"
+    : "status = $1, updated_at = NOW()";
+
   await pool.query(
-    `UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2`,
+    `UPDATE orders SET ${extraFields} WHERE id = $2`,
     [newStatus, oid]
   );
 
@@ -440,5 +457,114 @@ export async function updateOrderStatus(
     `INSERT INTO order_status_events (order_id, previous_status, new_status, source)
      VALUES ($1, $2, $3, $4)`,
     [oid, order.status, newStatus, source]
+  );
+
+  // ── Post-status-change side-effects ──
+  if (newStatus === "completed") {
+    // Award loyalty points (1 point per $1 = total_cents / 100)
+    await awardLoyaltyPoints(pool, order.store_id, order.customer_id, oid, order.total_cents);
+    // Log compliance event
+    await logComplianceEvent(pool, order.store_id, oid, null, "order_completed", `Order #${oid} completed`);
+  }
+}
+
+/**
+ * Fulfil all active reservations for a completed order and deduct inventory.
+ */
+async function completeOrderFulfillment(
+  pool: ReturnType<typeof getPool>,
+  oid: number,
+  storeId: number
+): Promise<void> {
+  const reservations = await pool.query(
+    `SELECT ir.id, ir.inventory_id, ir.quantity_reserved
+     FROM inventory_reservations ir
+     WHERE ir.order_id = $1 AND ir.status = 'reserved'`,
+    [oid]
+  );
+
+  for (const row of reservations.rows as { id: number; inventory_id: number; quantity_reserved: number }[]) {
+    // Mark reservation as fulfilled
+    await pool.query(
+      `UPDATE inventory_reservations SET status = 'fulfilled', fulfilled_at = NOW(), updated_at = NOW() WHERE id = $1`,
+      [row.id]
+    );
+
+    // Deduct from quantity_on_hand and quantity_reserved
+    await pool.query(
+      `UPDATE inventory
+       SET quantity_on_hand = GREATEST(0, quantity_on_hand - $1),
+           quantity_reserved = GREATEST(0, quantity_reserved - $1),
+           updated_at = NOW()
+       WHERE id = $2`,
+      [row.quantity_reserved, row.inventory_id]
+    );
+
+    // Log deduct movement
+    await pool.query(
+      `INSERT INTO inventory_movements (store_id, inventory_id, order_id, movement_type, quantity_delta, reason)
+       VALUES ($1, $2, $3, 'deduct', $4, 'Order completed')`,
+      [storeId, row.inventory_id, oid, row.quantity_reserved]
+    );
+
+    // Log compliance event for inventory adjustment
+    await logComplianceEvent(pool, storeId, oid, row.inventory_id, "inventory_adjusted", `Inventory item ${row.inventory_id} reduced by ${row.quantity_reserved} for order #${oid}`);
+  }
+}
+
+/**
+ * Award loyalty points to a customer (1 point per $1 spent).
+ */
+async function awardLoyaltyPoints(
+  pool: ReturnType<typeof getPool>,
+  storeId: number,
+  customerId: number,
+  orderId: number,
+  totalCents: number
+): Promise<void> {
+  const pointsEarned = Math.floor(totalCents / 100); // 1 point per $1
+
+  if (pointsEarned <= 0) return;
+
+  // Update customer totals
+  await pool.query(
+    `UPDATE customers
+     SET loyalty_points_balance = loyalty_points_balance + $1,
+         lifetime_points_earned = lifetime_points_earned + $1,
+         updated_at = NOW()
+     WHERE id = $2`,
+    [pointsEarned, customerId]
+  );
+
+  // Get new balance
+  const custResult = await pool.query(
+    `SELECT loyalty_points_balance FROM customers WHERE id = $1 LIMIT 1`,
+    [customerId]
+  );
+  const newBalance = (custResult.rows[0] as { loyalty_points_balance: number }).loyalty_points_balance;
+
+  // Log loyalty event
+  await pool.query(
+    `INSERT INTO loyalty_events (store_id, customer_id, order_id, event_type, points_delta, points_balance_after, description)
+     VALUES ($1, $2, $3, 'earn', $4, $5, $6)`,
+    [storeId, customerId, orderId, pointsEarned, newBalance, `Earned ${pointsEarned} points from order completion`]
+  );
+}
+
+/**
+ * Log a mock compliance event for demo visibility.
+ */
+async function logComplianceEvent(
+  pool: ReturnType<typeof getPool>,
+  storeId: number,
+  orderId: number | null,
+  inventoryId: number | null,
+  eventType: string,
+  description: string
+): Promise<void> {
+  await pool.query(
+    `INSERT INTO compliance_events (store_id, order_id, inventory_id, event_type, status, severity, event_payload_json, description)
+     VALUES ($1, $2, $3, $4, 'logged', 'info', '{}'::JSONB, $5)`,
+    [storeId, orderId, inventoryId, eventType, description]
   );
 }
