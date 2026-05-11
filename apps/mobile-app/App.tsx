@@ -8,6 +8,7 @@ import { PlaceholderLinksScreen } from "./src/screens/PlaceholderLinksScreen";
 import { ProductDetailScreen } from "./src/screens/ProductDetailScreen";
 import { CartScreen } from "./src/screens/CartScreen";
 import { OrderStatusScreen } from "./src/screens/OrderStatusScreen";
+import { RewardsProfileScreen } from "./src/screens/RewardsProfileScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -46,18 +47,11 @@ export default function App() {
               component={OrderStatusScreen}
               options={{ title: "Order Status" }}
             />
-            <Stack.Screen
-              name="RewardsProfile"
-              options={{ title: "Rewards / Profile" }}
-            >
-              {({ navigation }) => (
-                <PlaceholderLinksScreen
-                  title="Rewards / Profile"
-                  currentRoute="RewardsProfile"
-                  navigate={navigation.navigate}
-                />
-              )}
-            </Stack.Screen>
+          <Stack.Screen
+            name="RewardsProfile"
+            component={RewardsProfileScreen}
+            options={{ title: "Rewards / Profile" }}
+          />
           </Stack.Navigator>
         </NavigationContainer>
       </CartProvider>
