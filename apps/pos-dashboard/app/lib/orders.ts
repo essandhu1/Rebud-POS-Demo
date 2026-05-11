@@ -1,4 +1,4 @@
-import { apiGetList, apiGetData, apiPostData } from "./api";
+import { apiGetList, apiGetData, apiPostData, apiPatchData } from "./api";
 
 export type OrderListRow = {
   id: string;
@@ -83,4 +83,19 @@ export async function fetchOrderById(id: string): Promise<OrderDetail> {
 /** Cancel an order and release reservations. */
 export async function cancelOrder(id: string): Promise<OrderDetail> {
   return apiPostData<OrderDetail>(`/orders/${id}/cancel`, {});
+}
+
+export const PATCHABLE_STATUSES: Record<string, string | null> = {
+  placed: "accepted",
+  accepted: "preparing",
+  preparing: "ready",
+  ready: "completed",
+};
+
+/** Send a status update to the backend. Returns refreshed order. */
+export async function updateOrderStatus(
+  id: string,
+  status: string
+): Promise<OrderDetail> {
+  return apiPatchData<OrderDetail>(`/orders/${id}/status`, { status });
 }

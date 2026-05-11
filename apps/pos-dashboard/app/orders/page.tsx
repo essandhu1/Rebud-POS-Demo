@@ -6,9 +6,11 @@ import {
   fetchOrders,
   fetchOrderById,
   cancelOrder,
+  updateOrderStatus,
   centsToDollars,
   statusBadgeClass,
   ORDER_STATUS_LABELS,
+  PATCHABLE_STATUSES,
   type OrderListRow,
   type OrderDetail,
 } from "../lib/orders";
@@ -232,6 +234,8 @@ function OrderDetailView({ orderId, onBack }: { orderId: string; onBack: () => v
   }
 
   const canCancel = ["placed", "accepted", "preparing"].includes(order.status);
+  const nextStatus = PATCHABLE_STATUSES[order.status] ?? null;
+  const [updating, setUpdating] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -261,7 +265,28 @@ function OrderDetailView({ orderId, onBack }: { orderId: string; onBack: () => v
               disabled={cancelling}
               className="rounded-md border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
             >
-              {cancelling ? "Cancelling…" : "Cancel Order"}
+              {cancelling ? "Cancelling…" : "Cancel"}
+            </button>
+          )}
+          {nextStatus && (
+            <button
+              onClick={async () => {
+                setUpdating(true);
+                try {
+                  const updated = await updateOrderStatus(order.id, nextStatus);
+                  setOrder(updated);
+                } catch (e) {
+                  alert(e instanceof Error ? e.message : "Update failed");
+                } finally {
+                  setUpdating(false);
+                }
+              }}
+              disabled={updating}
+              className="rounded-md bg-slate-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+            >
+              {updating
+                ? "Updating…"
+                : `Mark ${ORDER_STATUS_LABELS[nextStatus] ?? nextStatus}`}
             </button>
           )}
         </div>

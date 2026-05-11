@@ -1,5 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { createOrder, cancelOrder, listOrders, getOrderById, type CreateOrderInput } from "../services/orders.service";
+import {
+  createOrder,
+  cancelOrder,
+  listOrders,
+  getOrderById,
+  updateOrderStatus,
+  type CreateOrderInput,
+} from "../services/orders.service";
 
 export const ordersRouter = Router();
 
@@ -87,6 +94,33 @@ ordersRouter.post("/:id/cancel", async (req: Request, res: Response, next: NextF
       return;
     }
     await cancelOrder(id);
+    const data = await getOrderById(id);
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/** PATCH /orders/:id/status — update order status. */
+ordersRouter.patch("/:id/status", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = paramId(req);
+    if (!id || !/^\d+$/.test(id)) {
+      res.status(400).json({
+        success: false,
+        error: { code: "INVALID_ORDER_ID", message: "Invalid order id" },
+      });
+      return;
+    }
+    const { status: newStatus } = req.body as { status?: string };
+    if (!newStatus) {
+      res.status(400).json({
+        success: false,
+        error: { code: "MISSING_STATUS", message: "New status is required" },
+      });
+      return;
+    }
+    await updateOrderStatus(id, newStatus);
     const data = await getOrderById(id);
     res.status(200).json({ success: true, data });
   } catch (error) {

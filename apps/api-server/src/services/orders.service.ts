@@ -382,3 +382,63 @@ async function findOrCreateCustomer(
   );
   return insertResult.rows[0].id as number;
 }
+
+// ── Status transitions ──────────────────────────────────────────────────────
+
+const ALLOWED_TRANSITIONS: Record<string, string[]> = {
+  placed: ["accepted"],
+  accepted: ["preparing"],
+  preparing: ["ready"],
+  ready: ["completed"],
+};
+
+/** Update an order's status following allowed transitions. */
+export async function updateOrderStatus(
+  orderId: string | number,
+  newStatus: string,
+  source: string = "pos_dashboard"
+): Promise<void> {
+  const pool = getPool();
+  const oid = typeof orderId === "string" ? Number(orderId) : orderId;
+
+  const orderResult = await pool.query(
+    `SELECT id, status FROM orders WHERE id = $1 LIMIT 1`,
+    [oid]
+  );
+  if (orderResult.rowCount === 0) {
+    throw new ApiError(404, "ORDER_NOT_FOUND", `Order ${oid} not found`);
+  }
+  const order = orderResult.rows[0] as { id: number; status: string };
+
+  if (order.status === newStatus) {
+    return; // no-op
+  }
+
+  if (order.status === "cancelled" || order.status === "completed") {
+    throw new ApiError(
+      400,
+      "ORDER_FINALIZED",
+      `Order ${oid} is already ${order.status} and cannot be changed`
+    );
+  }
+
+  const allowed = ALLOWED_TRANSITIONS[order.status];
+  if (!allowed || !allowed.includes(newStatus)) {
+    throw new ApiError(
+      400,
+      "INVALID_STATUS_TRANSITION",
+      `Cannot transition order ${oid} from "${order.status}" to "${newStatus}"`
+    );
+  }
+
+  await pool.query(
+    `UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2`,
+    [newStatus, oid]
+  );
+
+  await pool.query(
+    `INSERT INTO order_status_events (order_id, previous_status, new_status, source)
+     VALUES ($1, $2, $3, $4)`,
+    [oid, order.status, newStatus, source]
+  );
+}

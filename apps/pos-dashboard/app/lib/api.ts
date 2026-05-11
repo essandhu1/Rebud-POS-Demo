@@ -101,6 +101,41 @@ export async function apiPostData<T>(path: string, payload: unknown): Promise<T>
 }
 
 /**
+ * PATCH JSON to the API and unwrap the `{ success: true, data: T }` envelope.
+ */
+export async function apiPatchData<T>(path: string, payload: unknown): Promise<T> {
+  const url = `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Network request failed";
+    throw new ApiError(msg, undefined, "NETWORK_ERROR");
+  }
+
+  let body: unknown;
+  try {
+    body = await res.json();
+  } catch {
+    throw new ApiError(`Invalid JSON (${res.status})`, res.status);
+  }
+
+  if (!res.ok || !isApiSuccessBody(body)) {
+    const message =
+      isApiSuccessBody(body)
+        ? "Unexpected API error"
+        : `Request failed (${res.status})`;
+    throw new ApiError(message, res.status);
+  }
+
+  return body.data as T;
+}
+
+/**
  * GET JSON from the API and unwrap the `{ success: true, count: number, data: T }` list envelope.
  */
 export async function apiGetList<T>(path: string): Promise<{ count: number; data: T }> {
