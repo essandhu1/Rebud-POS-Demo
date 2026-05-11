@@ -1,4 +1,4 @@
-import { apiGetData } from "./api";
+import { apiGetList } from "./api";
 
 /** Matches the backend InventoryRowApi shape from GET /inventory. */
 export type InventoryRow = {
@@ -16,5 +16,6 @@ export type InventoryRow = {
 
 /** Fetch full inventory list from the backend. */
 export async function fetchInventory(): Promise<InventoryRow[]> {
-  return apiGetData<InventoryRow[]>("/inventory");
+  const result = await apiGetList<InventoryRow[]>("/inventory");
+  return result.data;
 }
