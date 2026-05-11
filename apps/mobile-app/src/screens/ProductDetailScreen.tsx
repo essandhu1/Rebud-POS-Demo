@@ -14,6 +14,7 @@ import type { RootStackParamList } from "../navigation/types";
 import { ApiRequestError } from "../lib/api";
 import { fetchProductById } from "../services/products";
 import type { MenuProduct } from "../types/product";
+import { useCart } from "../state/CartContext";
 
 const FALLBACK_IMAGE =
   "https://placehold.co/600x600?text=Rebud+Demo+Product";
@@ -24,11 +25,14 @@ function formatPrice(dollars: number): string {
   return `$${dollars.toFixed(2)}`;
 }
 
-export function ProductDetailScreen({ route }: Props) {
+export function ProductDetailScreen({ route, navigation }: Props) {
   const { productId } = route.params;
   const [product, setProduct] = useState<MenuProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [added, setAdded] = useState(false);
+  const { addItem } = useCart();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -97,6 +101,58 @@ export function ProductDetailScreen({ route }: Props) {
         {product.description ? (
           <Text style={styles.description}>{product.description}</Text>
         ) : null}
+
+        {/* Quantity controls */}
+        <View style={styles.quantityRow}>
+          <TouchableOpacity
+            style={styles.quantityBtn}
+            onPress={() => setQuantity((q) => Math.max(1, q - 1))}
+          >
+            <Text style={styles.quantityBtnText}>−</Text>
+          </TouchableOpacity>
+          <Text style={styles.quantityValue}>{quantity}</Text>
+          <TouchableOpacity
+            style={styles.quantityBtn}
+            onPress={() =>
+              setQuantity((q) => Math.min(product.stockQuantity, q + 1))
+            }
+          >
+            <Text style={styles.quantityBtnText}>+</Text>
+          </TouchableOpacity>
+          <Text style={styles.quantityLabel}>Qty</Text>
+        </View>
+
+        {/* Add to Cart */}
+        {added ? (
+          <View style={styles.addedBanner}>
+            <Text style={styles.addedBannerText}>Added to cart ✓</Text>
+            <TouchableOpacity
+              style={styles.viewCartBtn}
+              onPress={() => navigation.navigate("Cart")}
+            >
+              <Text style={styles.viewCartBtnText}>View Cart</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={[
+              styles.addToCartBtn,
+              product.stockQuantity === 0 && styles.addToCartBtnDisabled,
+            ]}
+            disabled={product.stockQuantity === 0}
+            onPress={() => {
+              addItem(product, quantity);
+              setAdded(true);
+              setTimeout(() => setAdded(false), 2500);
+            }}
+          >
+            <Text style={styles.addToCartBtnText}>
+              {product.stockQuantity === 0
+                ? "Out of Stock"
+                : `Add to Cart — ${formatPrice(product.price * quantity)}`}
+            </Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -155,5 +211,60 @@ const styles = StyleSheet.create({
   stock: { fontSize: 15, color: "#475569", marginBottom: 8 },
   potency: { fontSize: 14, color: "#64748b", marginBottom: 12 },
   sku: { fontSize: 13, color: "#64748b", marginBottom: 16 },
-  description: { fontSize: 15, lineHeight: 22, color: "#334155" },
+  description: { fontSize: 15, lineHeight: 22, color: "#334155", paddingHorizontal: 16 },
+  quantityRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    marginTop: 20,
+    gap: 8,
+  },
+  quantityBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: "#f1f5f9",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  quantityBtnText: { fontSize: 20, fontWeight: "700", color: "#0f172a" },
+  quantityValue: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#0f172a",
+    minWidth: 32,
+    textAlign: "center",
+  },
+  quantityLabel: { fontSize: 13, color: "#64748b", marginLeft: 4 },
+  addToCartBtn: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    backgroundColor: "#0f172a",
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  addToCartBtnDisabled: { backgroundColor: "#94a3b8" },
+  addToCartBtnText: { color: "#fff", fontSize: 17, fontWeight: "700" },
+  addedBanner: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#dcfce7",
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  addedBannerText: { fontSize: 15, fontWeight: "600", color: "#166534" },
+  viewCartBtn: {
+    backgroundColor: "#166534",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  viewCartBtnText: { color: "#fff", fontSize: 14, fontWeight: "600" },
 });
